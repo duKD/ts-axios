@@ -9,7 +9,7 @@ export const isObject = (obj): obj is Object => {
 }
 
 export const isExist = (obj) => {
-  return [null, 'undefined'].includes(typeof obj)
+  return !(obj === null || typeof obj === 'undefined')
 }
 
 export const encode = (str: string) => {

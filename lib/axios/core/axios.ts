@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from '../types'
 import xhr from './xhr'
-import { buildUrl } from '../utils'
+import { buildUrl } from '../help/utils'
 
 export default function axios(config: AxiosRequestConfig) {
   processConfig(config)
