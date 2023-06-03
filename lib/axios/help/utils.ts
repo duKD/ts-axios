@@ -12,6 +12,10 @@ export const isExist = (obj) => {
   return !(obj === null || typeof obj === 'undefined')
 }
 
+export const isPlainObject = (obj: any) => {
+  return toString.call(obj) === '[object Object]'
+}
+
 export const encode = (str: string) => {
   return encodeURIComponent(str)
     .replace(/%40/g, '@')
@@ -41,7 +45,7 @@ export const buildUrl = (url: string, params?: any): string => {
     values.forEach((val1) => {
       if (isDate(val1)) {
         val1 = val1.toISOString()
-      } else if (isObject(val1)) {
+      } else if (isPlainObject(val1)) {
         val1 = JSON.stringify(val1)
       }
       parts.push(`${encode(item)}=${encode(val1)}`)

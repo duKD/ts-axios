@@ -24,3 +24,38 @@ export interface AxiosRequestConfig {
   responseType?: XMLHttpRequestResponseType
   timeout?: number
 }
+
+/**
+ * 响应数据体格式
+ */
+export type AxiosResponse<T = any> = {
+  /**
+   * 响应的data数据
+   */
+  data: T
+  /**
+   * 响应的状态码
+   */
+  status: number
+  /**
+   * response响应的数据文本
+   */
+  statusText: string
+  /**
+   * response的返回的header
+   */
+  headers: any
+  /**
+   * request请求的config配置项
+   */
+  config: AxiosRequestConfig
+  /**
+   * request实例本身
+   */
+  request: any
+}
+
+/**
+ * 返回一个Promise对象
+ */
+export type axiosPromise<T = any> = Promise<AxiosResponse<T>>
