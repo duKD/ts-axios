@@ -26,7 +26,9 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off", //关闭any类型警告
         "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-extra-semi": "off",
         "prefer-const": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
         "no-empty": "off"
     },
 };

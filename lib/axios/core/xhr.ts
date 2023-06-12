@@ -1,16 +1,64 @@
 import { parseHeaders } from '../help/headers'
-import { AxiosRequestConfig, axiosPromise, AxiosResponse } from '../types'
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
+import { createError } from '../help/error'
 
-export default function xhr(config: AxiosRequestConfig): axiosPromise {
-  return new Promise((resolve) => {
-    const { data = null, url, method = 'get', headers, responseType } = config
+export default function xhr(config: AxiosRequestConfig): AxiosPromise {
+  return new Promise((resolve, reject) => {
+    const {
+      data = null,
+      url,
+      method = 'get',
+      headers,
+      responseType,
+      timeout = 0
+    } = config
+
+    const handleResponse = (response: AxiosResponse) => {
+      if (response.status >= 200 && response.status < 300) {
+        resolve(response)
+      } else {
+        reject(
+          createError({
+            message: `request failed with status code ${response.status}`,
+            config,
+            code: null,
+            request,
+            response
+          })
+        )
+      }
+    }
 
     const request = new XMLHttpRequest()
 
     if (responseType) {
       request.responseType = responseType
     }
+    if (timeout) {
+      request.timeout = timeout
+    }
 
+    request.onerror = function () {
+      reject(
+        createError({
+          message: 'network error',
+          config,
+          code: null,
+          request
+        })
+      )
+    }
+
+    request.ontimeout = function () {
+      reject(
+        createError({
+          message: `timeout error ${timeout}ms`,
+          config,
+          code: 'econnaborted',
+          request
+        })
+      )
+    }
     request.onreadystatechange = function () {
       console.log('onreadystatechange------', request.readyState)
       /**
@@ -21,6 +69,13 @@ export default function xhr(config: AxiosRequestConfig): axiosPromise {
         4	DONE	操作已完成。
       */
       if (request.readyState !== XMLHttpRequest.DONE) {
+        return
+      }
+      /**
+       * 在请求完成前，status 的值为 0。值得注意的是，如果 XMLHttpRequest 出错，浏览器返回的 status 也为 0
+       * 网络错误 和 timeout 要 跳出 处理
+       */
+      if (request.status === 0) {
         return
       }
 
@@ -35,7 +90,7 @@ export default function xhr(config: AxiosRequestConfig): axiosPromise {
         config,
         request
       }
-      resolve(response)
+      handleResponse(response)
     }
 
     request.open(method.toUpperCase(), url, true)

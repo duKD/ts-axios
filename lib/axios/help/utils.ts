@@ -62,3 +62,22 @@ export const buildUrl = (url: string, params?: any): string => {
   }
   return url
 }
+
+/**
+ * 将被拷贝的对象里的属性和方法拷贝到目标对象中
+ * @param to 拷贝的目标对象
+ * @param from 被拷贝的目标对象
+ */
+export const extend = <T extends Object, U extends Object>(
+  to: T,
+  from: U
+): T & U => {
+  for (let prototype in from) {
+    console.log(77777, prototype, from, from[prototype] as any)
+    ;(to as T & U)[prototype] = from[prototype] as any
+    console.log(9999, (to as any)[prototype])
+  }
+  console.log(88888, to)
+
+  return to as T & U
+}
