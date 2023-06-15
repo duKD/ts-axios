@@ -22,6 +22,17 @@ export interface AxiosRequestConfig {
   params?: any // post、patch 等类型请求的数据 可选
   headers?: any
   responseType?: XMLHttpRequestResponseType
+  cancelToken?: CancelToken
+  /**
+   * 允许在请求数据发送到服务器之前对其进行更改
+   * 这只适用于请求方法’PUT’，’POST’和’PATCH’
+   */
+  transformRequest?: AxiosTransformer | AxiosTransformer[]
+
+  /**
+   * 允许在 then / catch之前对响应数据进行更改
+   */
+  transformResponse?: AxiosTransformer | AxiosTransformer[]
   timeout?: number
 }
 
@@ -141,6 +152,13 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosStatic extends AxiosInstance {
+  create(config?: AxiosRequestConfig): AxiosInstance
+  CancelToken: CancelTokenStatic
+  Cancel: CancelStatic
+  isCancel: (arg: any) => boolean
+}
+
 /**
  * 拦截器的泛型接口
  */
@@ -162,4 +180,43 @@ export interface ResolvedFn<T> {
  */
 export interface RejectedFn {
   (error: any): any
+}
+
+/**
+ * config和响应数据的处理
+ */
+export interface AxiosTransformer {
+  (data: any, headers?: any): any
+}
+
+export interface CancelToken {
+  promise: Promise<Cancel>
+  reason: Cancel
+  throwIfRequest: () => void
+}
+
+export interface Canceler {
+  (message?: string): void
+}
+
+export interface CancelExecutor {
+  (cancel: Canceler): void
+}
+
+export interface CancelTokenSource {
+  token: CancelToken
+  cancel: Canceler
+}
+
+export interface CancelTokenStatic {
+  source(): CancelTokenSource
+  new (executor: CancelExecutor): CancelToken
+}
+
+export interface Cancel {
+  message?: string
+}
+
+export interface CancelStatic {
+  new (message?: string): Cancel
 }

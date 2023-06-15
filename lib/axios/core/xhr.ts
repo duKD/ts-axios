@@ -10,6 +10,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       method = 'get',
       headers,
       responseType,
+      cancelToken,
       timeout = 0
     } = config
 
@@ -60,7 +61,6 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       )
     }
     request.onreadystatechange = function () {
-      console.log('onreadystatechange------', request.readyState)
       /**
       * 0	UNSENT	代理被创建，但尚未调用 open() 方法。
         1	OPENED	open() 方法已经被调用。
@@ -101,6 +101,13 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         request.setRequestHeader(name, headers[name])
       }
     })
+
+    if (cancelToken) {
+      cancelToken.promise.then((reason) => {
+        request.abort()
+        reject(reason)
+      })
+    }
 
     request.send(data)
   })

@@ -73,11 +73,38 @@ export const extend = <T extends Object, U extends Object>(
   from: U
 ): T & U => {
   for (let prototype in from) {
-    console.log(77777, prototype, from, from[prototype] as any)
     ;(to as T & U)[prototype] = from[prototype] as any
-    console.log(9999, (to as any)[prototype])
   }
-  console.log(88888, to)
 
   return to as T & U
+}
+
+/**
+ * 深度拷贝对象
+ * @param objs 接受需要拷贝的对象，有相同key时后者覆盖前者，使用...接受不定个数的拷贝对象
+ */
+export const deepMerge = (...objs: any[]): any => {
+  const result = Object.create(null)
+
+  objs.forEach((obj) => {
+    // 当obj为真，即不为空值或空对象时
+    if (obj) {
+      Object.keys(obj).forEach((key) => {
+        const val = obj[key]
+
+        if (isPlainObject(val)) {
+          // 判断是解决result[key]为undefined时，减少一次遍历 -- 优化代码
+          if (isPlainObject(result[key])) {
+            result[key] = deepMerge(result[key], val)
+          } else {
+            result[key] = deepMerge(val)
+          }
+        } else {
+          result[key] = val
+        }
+      })
+    }
+  })
+
+  return result
 }

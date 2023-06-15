@@ -1,12 +1,13 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from '../types'
 import xhr from '../core/xhr'
 import { buildUrl } from '../help/utils'
-import { transformRequest, transformResponse } from '../help/data'
-import { processHeaders } from '../help/headers'
+import { flattenHeaders } from '../help/headers'
+import transform from './transform'
 
 export default function dispatchRequest(
   config: AxiosRequestConfig
 ): AxiosPromise {
+  throwIfCanCelRequest(config)
   processConfig(config)
   return xhr(config).then((res) => {
     return transformResponseData(res)
@@ -15,9 +16,9 @@ export default function dispatchRequest(
 
 const processConfig = (config: AxiosRequestConfig) => {
   // headers 处理 要在 data 处理之前
-  config.headers = transformHeaders(config)
   config.url = transformUrl(config)
-  config.data = transformRequestData(config)
+  config.data = transform(config.data, config.headers, config.transformRequest)
+  config.headers = flattenHeaders(config.headers, config.method)
 }
 
 const transformUrl = (config: AxiosRequestConfig) => {
@@ -25,17 +26,13 @@ const transformUrl = (config: AxiosRequestConfig) => {
   return buildUrl(url, params)
 }
 
-const transformRequestData = (config: AxiosRequestConfig): any => {
-  const { data } = config
-  return transformRequest(data)
-}
-
-const transformHeaders = (config: AxiosRequestConfig): any => {
-  const { data, headers = {} } = config
-  return processHeaders(headers, data)
-}
-
 const transformResponseData = (res: AxiosResponse) => {
-  res.data = transformResponse(res.data)
+  res.data = transform(res.data, res.headers, res.config.transformResponse)
   return res
+}
+
+const throwIfCanCelRequest = (config: AxiosRequestConfig) => {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequest()
+  }
 }
