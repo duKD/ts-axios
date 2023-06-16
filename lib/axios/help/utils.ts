@@ -108,3 +108,15 @@ export const deepMerge = (...objs: any[]): any => {
 
   return result
 }
+
+/**
+ * 返回一个布尔值判断当前传入的变量是否为URLSearchParams类型对象
+ * @param val 需要判断是否为URLSearchParams对象的变量
+ */
+export const isURLSearchParams = (val: any): val is URLSearchParams => {
+  return typeof val !== 'undefined' && val instanceof URLSearchParams
+}
+
+export const isFormData = (val: any): val is FormData => {
+  return val !== undefined && val instanceof FormData
+}

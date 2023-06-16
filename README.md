@@ -1,7 +1,56 @@
-# Vue 3 + Vite
+## 介绍
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+ts 实现 对 xhr 封装 实现 axios
+使用 vite 打包发布
 
-## Recommended IDE Setup
+使用例子 vue3：
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+```
+<script lang="ts" setup>
+import { ref } from 'vue'
+import axios from '@lqcoder/axios'
+
+
+//测试 下载 进度条
+
+const progress = ref('0')
+
+//测试 上传文件进度条
+const fileRef = ref<HTMLInputElement | null>()
+let file: File
+
+const handle = () => {
+  if (fileRef.value && fileRef.value.files) {
+    file = fileRef.value.files[0]
+  }
+}
+
+const upload = () => {
+  if (!file) alert('未选择文件')
+  let formData = new FormData()
+  formData.append('file', file)
+  axios({
+    method: 'post',
+    url: 'api/uploadFile',
+    data: formData,
+    onUploadProgress(e) {
+      console.log(3333333, e)
+      progress.value = (e.loaded / e.total).toFixed(2)
+    }
+  })
+
+}
+
+
+</script>
+
+<template>
+  <section>app====下载进度{{ progress }}</section>
+  <section>
+    选择文件
+    <input ref="fileRef" type="file" accept="*" @change="handle" />
+  </section>
+  <button @click="upload">上传文件</button>
+</template>
+
+```

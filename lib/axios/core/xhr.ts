@@ -1,6 +1,7 @@
 import { parseHeaders } from '../help/headers'
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
 import { createError } from '../help/error'
+import { isFormData } from '../help/utils'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -11,6 +12,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       headers,
       responseType,
       cancelToken,
+      withCredentials,
+      onDownloadProgress,
+      onUploadProgress,
       timeout = 0
     } = config
 
@@ -37,6 +41,24 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
     if (timeout) {
       request.timeout = timeout
+    }
+    if (withCredentials) {
+      request.withCredentials = withCredentials
+    }
+
+    // 添加监听下载进度的事件
+    if (onDownloadProgress) {
+      request.onprogress = onDownloadProgress
+    }
+
+    // 添加监听上传进度的事件
+    if (onUploadProgress) {
+      request.upload.onprogress = onUploadProgress
+    }
+
+    // 判断request的data类型，是FormData类型的对象数据，则删除Content-Type的header头信息，让浏览器自行添加
+    if (isFormData(data)) {
+      delete headers['Content-Type']
     }
 
     request.onerror = function () {

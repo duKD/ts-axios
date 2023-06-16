@@ -23,6 +23,14 @@ export interface AxiosRequestConfig {
   headers?: any
   responseType?: XMLHttpRequestResponseType
   cancelToken?: CancelToken
+  /** 是否发送跨域的 */
+  withCredentials?: boolean
+
+  /** XSRF的cookie的name */
+  xsrfCookieName?: string
+
+  /** XSRF发送的header的name */
+  xsrfHeaderName?: string
   /**
    * 允许在请求数据发送到服务器之前对其进行更改
    * 这只适用于请求方法’PUT’，’POST’和’PATCH’
@@ -33,6 +41,12 @@ export interface AxiosRequestConfig {
    * 允许在 then / catch之前对响应数据进行更改
    */
   transformResponse?: AxiosTransformer | AxiosTransformer[]
+
+  /** 监听下载的进度事件 */
+  onDownloadProgress?: (e: ProgressEvent) => void
+
+  /** 监听上传的进度事件 */
+  onUploadProgress?: (e: ProgressEvent) => void
   timeout?: number
 }
 

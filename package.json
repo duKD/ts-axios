@@ -1,14 +1,15 @@
 {
-  "name": "vue-vite-multiple-entry",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@lqcoder/axios",
+  "private": false,
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc &&vitest run --coverage&& vite build",
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "format": "prettier --write \"./**/*.{html,vue,ts,js,json,md}\""
   },
@@ -34,7 +35,15 @@
     "typescript": "^4.7.4",
     "vite": "^4.2.0",
     "vite-plugin-checker": "^0.5.6",
+    "vite-plugin-dts": "^2.3.0",
     "vitest": "^0.31.1",
     "vue-tsc": "^1.2.0"
-  }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "./dist/axios.umd.js",
+  "module": "./dist/axios.es.js",
+  "types": "./dist/index.d.ts"
 }
